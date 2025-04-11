@@ -1,4 +1,3 @@
-
 from transformers import pipeline, AutoTokenizer, AutoModelForSequenceClassification
 
 def load_sentiment_model():
