@@ -1,3 +1,4 @@
+%%writefile app.py
 
 from model_utils import load_sentiment_model
 
