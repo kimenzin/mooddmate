@@ -1,5 +1,5 @@
-%%writefile app.py
-
+import streamlit as st
+import pandas as pd
 from model_utils import load_sentiment_model
 
 # 모델 로드
@@ -32,23 +32,20 @@ if st.button("분석하기"):
         
         st.write(f"확신도: {score:.2%}")
     else:
-        st.write("먼저 문장을 입력해주세요!")
+        st.warning("먼저 문장을 입력해주세요!")
 
 # CSV 데이터 분석 예시
 st.write("### 예시 데이터 감성 분석")
-# sentiment_data.csv 파일을 읽어오기
-data = pd.read_csv('/content/AI_B_Team1/sentiment_data.csv')
+try:
+    data = pd.read_csv("sentiment_data.csv")  # 파일은 레포지토리 루트에 있어야 함
+    results = []
+    for text in data['text']:
+        result = classifier(text)
+        label = result[0]['label']
+        score = result[0]['score']
+        results.append({'text': text, 'predicted_label': label, 'score': score})
 
-# 데이터의 'text' 컬럼에 대해 감성 분석 수행
-results = []
-for text in data['text']:
-    result = classifier(text)
-    label = result[0]['label']  # 예측된 감성 라벨
-    score = result[0]['score']  # 예측된 확신도
-    results.append({'text': text, 'predicted_label': label, 'score': score})
-
-# 결과를 DataFrame으로 저장
-results_df = pd.DataFrame(results)
-
-# 예시 결과 출력
-st.write(results_df)  # 분석 결과 테이블로 출력
+    results_df = pd.DataFrame(results)
+    st.dataframe(results_df)
+except FileNotFoundError:
+    st.error("⚠️ 'sentiment_data.csv' 파일을 찾을 수 없습니다. 레포지토리에 업로드되어 있어야 합니다.")
